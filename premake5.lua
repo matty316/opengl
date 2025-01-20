@@ -14,7 +14,8 @@ project "OpenGLProj"
     includedirs { "src" }
     libdirs { "lib" }
 
-    links { "glfm3" }
+    links { "glfw3" }
+    links { "OpenGL32" }
 
     filter "configurations:Debug"
     defines { "DEBUG" }
