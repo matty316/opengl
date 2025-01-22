@@ -74,6 +74,13 @@ glm::vec3 cubePositions[] = {
 
 float mixVal = 0.2;
 
+glm::vec3 cameraPos{ 0.0f, 0.0f, 3.0f };
+glm::vec3 cameraFront{ 0.0f, 0.0f, -1.0f };
+glm::vec3 cameraUp{ 0.0f, 1.0f, 0.0f };
+
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
 int main() { 
 	GLFWwindow* window = initWindow();
 
@@ -100,6 +107,9 @@ int main() {
 	shader.setInt("texture2", 1);
 
 	while (!glfwWindowShouldClose(window)) {
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
 		processInput(window);
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -113,11 +123,13 @@ int main() {
 		shader.use();
 		shader.setFloat("mixVal", mixVal);
 
-		glm::mat4 view = glm::mat4(1.0f);
-		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
 		glm::mat4 projection;
 		projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+		glm::mat4 view;
+		float camX = sin(glfwGetTime()) * 10.0f;
+		float camZ = cos(glfwGetTime()) * 10.0f;
+		view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 		unsigned int transformLoc2 = glGetUniformLocation(shader.ID, "view");
 		glUniformMatrix4fv(transformLoc2, 1, GL_FALSE, glm::value_ptr(view));
@@ -160,11 +172,16 @@ void processInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-		mixVal += 0.001f;
+	const float cameraSpeed = 2.5f * deltaTime;
 
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-		mixVal -= 0.001f;
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		cameraPos += cameraSpeed * cameraFront;
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		cameraPos -= cameraSpeed * cameraFront;
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
 GLFWwindow* initWindow() {
