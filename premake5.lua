@@ -8,10 +8,11 @@ project "OpenGLProj"
     targetdir "bin/%{cfg.buildcfg}"
     cppdialect "C++23"
 
-    files { "include/**.h", "include/**.hpp", "src/**.c", "src/**.cpp" }
+    files { "include/**.h", "include/**.hpp", "src/**.c", "src/**.cpp", "shaders/**.vs", "shaders/**.fs" }
 
     includedirs { "include" }
     includedirs { "src" }
+    includedirs { "shaders" }
     libdirs { "lib" }
 
     links { "glfw3" }

@@ -94,4 +94,14 @@ struct Shader {
 	void setFloat(const std::string& name, float value) {
 		glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 	}
+	
+	void setMat4(const std::string& name, glm::mat4 mat) {
+		unsigned int transformLoc = glGetUniformLocation(ID, name.c_str());
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(mat));
+	}
+
+	void setVec3(const std::string& name, glm::vec3 vec) {
+		unsigned int vecLoc = glGetUniformLocation(ID, name.c_str());
+		glUniform3fv(vecLoc, 1, glm::value_ptr(vec));
+	}
 };
