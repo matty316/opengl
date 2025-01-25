@@ -8,7 +8,7 @@ project "OpenGLProj"
     targetdir "bin/%{cfg.buildcfg}"
     cppdialect "C++23"
 
-    files { "include/**.h", "include/**.hpp", "src/**.c", "src/**.cpp", "shaders/**.vs", "shaders/**.fs" }
+    files { "include/**.h", "include/**.hpp", "src/**.c", "src/**.cpp", "shaders/**.vert", "shaders/**.frag" }
 
     includedirs { "include" }
     includedirs { "src" }

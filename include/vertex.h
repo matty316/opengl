@@ -88,7 +88,7 @@ private:
 
 struct Model {
 public: 
-	Model(char* path) {
+	Model(const char* path) {
 		loadModel(path);
 	}
 	void draw(Shader& shader) {
@@ -195,6 +195,8 @@ private:
 				textures_loaded.push_back(texture);
 			}
 		}
+
+		return textures;
 	}
 
 	unsigned int textureFromFile(const char* path, const std::string& directory, bool gamma)
