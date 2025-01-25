@@ -104,8 +104,8 @@ int main() {
 	glfwSetScrollCallback(window, scroll_callback);
 
 	glEnable(GL_DEPTH_TEST);
-	Shader shader{ "shaders/shader.vs", "shaders/shader.fs" };
-	Shader lightShader{ "shaders/lightshader.vs", "shaders/lightshader.fs" };
+	Shader shader{ "shaders/shader.vert", "shaders/shader.frag" };
+	Shader lightShader{ "shaders/lightshader.vert", "shaders/lightshader.frag" };
 
 	unsigned int VBO, VAO, lightVAO;
 	bindVertexArray(VBO, VAO, lightVAO);
