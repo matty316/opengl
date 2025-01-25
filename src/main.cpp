@@ -77,6 +77,13 @@ const glm::vec3 cubePositions[] = {
 		glm::vec3(-1.3f,  1.0f, -1.5f)
 };
 
+const glm::vec3 pointLightPositions[] = {
+	{ 0.7f, 0.2f, 2.0f },
+	{ 2.3f,-3.3f,-4.0f },
+	{-4.0f, 2.0f,-12.0f },
+	{ 0.0f, 0.0f,-3.0f },
+};
+
 Cam cam;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -115,26 +122,53 @@ int main() {
 		lastFrame = currentFrame;
 		processInput(window);
 
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 
-		shader.use();
-
-		shader.setFloat("light.constant", 1.0f);
-		shader.setFloat("light.linear", 0.09f);
-		shader.setFloat("light.quadratic", 0.032f);
-
-		shader.setVec3("viewPos", cam.pos);
-		shader.setVec3("light.position", cam.pos);
-		shader.setVec3("light.direction", cam.front);
-		shader.setFloat("light.cutoff", glm::cos(glm::radians(12.5f)));
-		shader.setFloat("light.outerCutoff", glm::cos(glm::radians(17.5f)));
-
+		shader.use();		
 		shader.setFloat("material.shininess", 32.0f);
 
-		shader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-		shader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-		shader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		// directional light
+		shader.setVec3("viewPos", {-0.2f, -1.0f, -0.3f});
+		shader.setVec3("dirLight.direction", cam.front);
+		shader.setVec3("dirLight.ambient", glm::vec3(0.05f));
+		shader.setVec3("dirLight.diffuse", glm::vec3(0.4f));
+		shader.setVec3("dirLight.specular", glm::vec3(0.5f));
+
+		glm::vec3 ambient(0.05f);
+		glm::vec3 diffuse(0.8f);
+		glm::vec3 specular(1.0f);
+		// point lights
+		for (size_t i = 0; i < 4; i++) {
+			std::string pointlight = "pointLights[" + std::to_string(i) + "]";
+			std::string posName = pointlight + ".position";
+			std::string ambientName = pointlight + ".ambient";
+			std::string diffuseName = pointlight + ".diffuse";
+			std::string specularName = pointlight + ".specular";			
+			std::string constantName = pointlight + ".constant";
+			std::string linearName = pointlight + ".linear";
+			std::string quadraticName = pointlight + ".quadratic";
+
+			shader.setVec3(posName.c_str(), pointLightPositions[i]);
+			shader.setVec3(ambientName.c_str(), ambient);
+			shader.setVec3(diffuseName.c_str(), diffuse);
+			shader.setVec3(specularName.c_str(), specular);
+			shader.setFloat(constantName.c_str(), 1.0f);
+			shader.setFloat(linearName.c_str(), 0.09f);
+			shader.setFloat(quadraticName.c_str(), 0.032f);
+		}
+
+		shader.setVec3("spotLight.position", cam.pos);
+		shader.setVec3("spotLight.direction", cam.front);
+		shader.setFloat("spotLight.cutoff", cos(glm::radians(12.5f)));
+		shader.setFloat("spotLight.outerCutoff", cos(glm::radians(17.5f)));
+		shader.setVec3("spotLight.ambient", glm::vec3(0.0f));
+		shader.setVec3("spotLight.diffuse", glm::vec3(1.0f));
+		shader.setVec3("spotLight.specular", glm::vec3(1.0f));
+		shader.setFloat("spotLight.constant", 1.0f);
+		shader.setFloat("spotLight.linear", 0.09f);
+		shader.setFloat("spotLight.quadtratic", 0.032f);
+
 		glm::mat4 projection;
 		projection = glm::perspective(glm::radians(cam.zoom), float(screenWidth) / float(screenHeight), 0.1f, 100.0f);
 		shader.setMat4("projection", projection);
@@ -160,17 +194,19 @@ int main() {
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
-		/*lightShader.use();
+		lightShader.use();
 
-		glm::mat4 lightModel = glm::mat4(1.0f);
-		lightModel = glm::translate(lightModel, lightPos);
-		lightModel = glm::scale(lightModel, glm::vec3(0.2f));
-		lightShader.setMat4("projection", projection);
-		lightShader.setMat4("view", view);
-		lightShader.setMat4("model", lightModel);
-		
-		glBindVertexArray(lightVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);*/
+		for (size_t i = 0; i < 4; i++) {
+			glm::mat4 lightModel = glm::mat4(1.0f);
+			lightModel = glm::translate(lightModel, pointLightPositions[i]);
+			lightModel = glm::scale(lightModel, glm::vec3(0.2f));
+			lightShader.setMat4("projection", projection);
+			lightShader.setMat4("view", view);
+			lightShader.setMat4("model", lightModel);
+
+			glBindVertexArray(lightVAO);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
