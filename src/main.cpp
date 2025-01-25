@@ -10,6 +10,7 @@
 #include "stb_image.h"
 #include "cam.h"
 #include "error.h"
+#include "vertex.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);

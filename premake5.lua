@@ -17,7 +17,7 @@ project "OpenGLProj"
 
     links { "glfw3" }
     links { "OpenGL32" }
-    links { "lib/assimp-vc143-mt" }
+    links { "assimp-vc143-mt" }
 
     filter "configurations:Debug"
     defines { "DEBUG" }
